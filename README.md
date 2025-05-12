@@ -105,11 +105,23 @@ To start the bot with the default settings, run:
 python3 src/main.py -u {account_name_from_api-keys.json}
 ```
 
+e.g.
+
+```sh
+source venv/bin/activate && python3 src/main.py -u binance_01
+```
+
 or make a new configuration file, using `configs/template.json` as a template, and start the bot with:
 
 
 ```sh
 python3 src/main.py path/to/config.json
+```
+
+e.g.
+
+```sh
+source venv/bin/activate && python3 src/main.py configs/examples/btc_long.json -u binance_01
 ```
 
 ## Jupyter Lab
