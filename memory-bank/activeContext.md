@@ -21,22 +21,171 @@ The current focus is on understanding and documenting the Passivbot project stru
    - Documenting configuration options and their effects
    - Analyzing the relationship between configuration and performance
 
+4. **Installation and Setup Process**
+   - Documenting the complete installation process
+   - Identifying required dependencies and their versions
+   - Ensuring smooth setup across different environments
+
 ## Recent Changes
 
-As this is the initial documentation effort, there are no recent code changes to document. However, the following documentation has been established:
+The following major setup activities and documentation have been established:
 
-1. **Memory Bank Creation**
+1. **Environment Setup and Installation**
+   - Python 3.11+ and Rust 1.86+ confirmed as working environment
+   - Virtual environment created and activated
+   - All critical dependencies installed and tested
+   - Rust components verified as properly built
+   - Basic bot execution validated with example configuration
+   - API keys structure confirmed (example keys not valid for actual trading)
+
+2. **Memory Bank Creation**
    - Project brief has been preserved from existing documentation
    - Product context has been created based on project understanding
    - System patterns have been documented to capture architecture
    - Technical context has been established to document technology stack
-   - Active context (this document) has been created
-   - Progress tracking will be established
+   - Active context (this document) has been created and updated with installation instructions
+   - Progress tracking established
 
-2. **Knowledge Organization**
+3. **Knowledge Organization**
    - Core trading strategies have been identified and documented
    - Key components have been mapped in system architecture diagrams
    - Technical stack and dependencies have been cataloged
+
+## Installation Guide
+
+### Prerequisites
+
+1. **Python 3.8+** (tested with Python 3.11.3)
+
+   ```bash
+   python3 --version
+   ```
+
+2. **Rust** (tested with Rust 1.86.0)
+
+   ```bash
+   rustc --version
+   ```
+
+   - If not installed, follow instructions at [https://www.rust-lang.org/tools/install](https://www.rust-lang.org/tools/install)
+
+### Step-by-Step Installation Process
+
+1. **Clone the Repository** (if not already done)
+
+   ```bash
+   git clone https://github.com/enarjord/passivbot.git
+   cd passivbot
+   ```
+
+2. **Create and Activate Virtual Environment**
+
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+
+3. **Install Core Dependencies First**
+
+   ```bash
+   pip install sortedcontainers python-dateutil maturin
+   ```
+
+4. **Install Data Handling and Visualization Dependencies**
+
+   ```bash
+   pip install pandas matplotlib numpy
+   ```
+
+5. **Install Exchange API Dependencies (Exact Version Required)**
+
+   ```bash
+   pip install ccxt==4.4.77
+   ```
+
+6. **Install Remaining Dependencies**
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+   - Note: Some dependencies may fail to install, but the bot can still function with the core dependencies
+
+7. **Build Rust Extensions** (if not already built)
+
+   ```bash
+   cd passivbot-rust
+   maturin develop --release
+   cd ..
+   ```
+
+8. **Set Up API Keys**
+   - Copy the example file:
+
+     ```bash
+     cp api-keys.json.example api-keys.json
+     ```
+
+   - Edit api-keys.json with your exchange API keys and secrets
+
+9. **Verify Installation**
+   - Check that the Rust extension can be imported:
+
+     ```bash
+     python -c "import passivbot_rust; print('Import successful')"
+     ```
+
+   - Check that the bot can start (it will attempt to authenticate with the exchange):
+
+     ```bash
+     python3 src/main.py --help
+     ```
+
+### Running the Bot
+
+1. **Run with Default Settings**
+
+   ```bash
+   python3 src/main.py -u account_name_from_api-keys.json
+   ```
+
+2. **Run with Specific Configuration**
+
+   ```bash
+   python3 src/main.py configs/examples/btc_long.json -u account_name_from_api-keys.json
+   ```
+
+3. **Common Example Configurations**
+   - BTC Long only: `configs/examples/btc_long.json`
+   - Multiple coins (BTC, ETH, XRP, SOL, ADA): `configs/examples/BTC_ETH_XRP_SOL_ADA_long.json`
+   - All approved coins: `configs/examples/all_approved.json`
+
+### Troubleshooting
+
+1. **Missing Dependencies**
+   - If you encounter "ModuleNotFoundError", install the specific missing module:
+
+     ```bash
+     pip install module_name
+     ```
+
+2. **Rust Component Issues**
+   - Rebuild the Rust components:
+
+     ```bash
+     cd passivbot-rust
+     maturin develop --release
+     cd ..
+     ```
+
+3. **Exchange API Issues**
+   - Verify your API keys are correct in api-keys.json
+   - Check that you're using the correct account name with the -u flag
+   - Ensure ccxt version is exactly 4.4.77 as required:
+
+     ```bash
+     pip install ccxt==4.4.77
+     ```
 
 ## Next Steps
 
