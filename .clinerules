@@ -1,0 +1,132 @@
+# Passivbot Project Rules and Patterns
+
+## Project Structure Understanding
+
+- Passivbot is organized with a clear separation between Python high-level logic and Rust performance-critical components
+- The `src/` directory contains the core Python implementation
+- The `passivbot-rust/` directory contains performance-optimized Rust code
+- The `exchanges/` subdirectory contains exchange-specific adapter implementations
+- Configuration files are stored in the `configs/` directory
+- Documentation is maintained in the `docs/` directory
+- Use Jupyter notebooks in the `notebooks/` directory for analysis and visualization
+
+## Coding Patterns
+
+1. **Exchange Adapter Implementation**
+   - All exchange adapters must implement a common interface
+   - Exchange-specific functionality is isolated in dedicated modules
+   - Rate limiting and error handling are handled at the adapter level
+   - Keep exchange-specific quirks isolated from core bot logic
+
+2. **Performance-Critical Code**
+   - CPU-intensive operations should be implemented in Rust where possible
+   - Use Numba's @njit decoration for performance-critical Python functions
+   - Avoid Python loops in hot paths, use vectorized operations instead
+   - Consider memory usage in backtesting operations with large datasets
+
+3. **Configuration Management**
+   - All strategy parameters should be configurable via JSON files
+   - Configuration should be validated and normalized at load time
+   - Provide sensible defaults for all parameters
+   - Maintain backward compatibility for configuration files
+
+4. **Risk Management**
+   - Implement circuit breakers for exceptional market conditions
+   - Validate position sizes against account balance limits
+   - Handle exchange errors gracefully with appropriate retries
+   - Include mechanisms to protect against excessive losses
+
+## Development Workflow
+
+1. **Code Changes**
+   - Maintain the separation between Python and Rust components
+   - Update tests when modifying core algorithm behavior
+   - Verify changes with backtesting before live deployment
+   - Document parameter changes in configuration templates
+
+2. **Testing Approach**
+   - Use backtesting to validate strategy behavior changes
+   - Compare performance metrics before and after changes
+   - Test on multiple market conditions for robustness
+   - Verify exchange API compatibility with all supported exchanges
+
+3. **Performance Evaluation**
+   - Key metrics include:
+     - Total profit/loss
+     - Drawdown
+     - Sharpe ratio or similar risk-adjusted return metrics
+     - Win rate and average profit/loss per trade
+   - Compare performance across different market conditions
+   - Consider both absolute returns and risk-adjusted performance
+
+## Project-Specific Terminology
+
+1. **Trading Strategy Concepts**
+   - **Grid Orders**: Orders placed at specified price intervals
+   - **Trailing Orders**: Orders that follow price movements before execution
+   - **Martingale Re-entry**: Doubling down on losing positions
+   - **Unstucking**: Gradually realizing losses on underwater positions
+   - **Forager**: Feature that selects volatile markets for trading
+
+2. **Configuration Parameters**
+   - **Grid Spacing**: Distance between grid orders
+   - **Leverage**: Multiplier for position size
+   - **Take Profit**: Target price for position exits
+   - **Markup**: Percentage above entry price for take profit
+   - **Entry Qty**: Initial position size relative to balance
+
+3. **System Components**
+   - **Backtester**: Simulates strategy on historical data
+   - **Optimizer**: Finds optimal parameter configurations
+   - **Exchange Adapter**: Interface to specific cryptocurrency exchange
+   - **Position Manager**: Tracks and updates open positions
+
+## Documentation Standards
+
+1. **Code Documentation**
+   - Document function purpose, parameters, and return values
+   - Explain complex algorithms with comments
+   - Include examples for non-obvious behavior
+   - Document configuration parameters thoroughly
+
+2. **User Documentation**
+   - Maintain comprehensive installation instructions
+   - Provide clear examples for common operations
+   - Document best practices for configuration
+   - Include troubleshooting guides for common issues
+
+## Memory Bank Maintenance
+
+1. **Update Frequency**
+   - Update activeContext.md after each significant change
+   - Update progress.md when completing feature work
+   - Review all memory bank files periodically to ensure accuracy
+   - Update .clinerules when discovering new patterns or conventions
+
+2. **Documentation Focus**
+   - Emphasize the "why" behind design decisions
+   - Document relationships between components
+   - Capture trade-offs and constraints
+   - Note areas of potential future improvement
+
+## Interaction Guidelines
+
+1. **When Discussing Trading Strategies**
+   - Focus on systematic behavior, not market predictions
+   - Emphasize risk management alongside profit potential
+   - Acknowledge the limitations of backtesting for future performance
+   - Consider multiple market conditions, not just optimistic scenarios
+
+2. **When Implementing Exchange-Related Features**
+   - Consider rate limits and API constraints
+   - Handle error conditions gracefully
+   - Implement appropriate retry mechanisms
+   - Consider latency and execution uncertainty
+
+3. **When Optimizing Performance**
+   - Profile before optimizing to identify bottlenecks
+   - Consider both execution speed and memory usage
+   - Balance between Python flexibility and Rust performance
+   - Document performance-critical sections of code
+
+This file serves as a living document that will be updated as we discover more project-specific patterns and best practices. It helps maintain consistency in our approach to the Passivbot codebase.
