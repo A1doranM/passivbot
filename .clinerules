@@ -9,6 +9,7 @@
 - Configuration files are stored in the `configs/` directory
 - Documentation is maintained in the `docs/` directory
 - Use Jupyter notebooks in the `notebooks/` directory for analysis and visualization
+- OHLCV data is cached in the `caches/` directory for performance
 
 ## Coding Patterns
 
@@ -67,19 +68,50 @@
    - **Martingale Re-entry**: Doubling down on losing positions
    - **Unstucking**: Gradually realizing losses on underwater positions
    - **Forager**: Feature that selects volatile markets for trading
+   - **Wallet Exposure**: Position value to wallet balance ratio
+   - **Take Profit**: Order to exit position at a profit
 
 2. **Configuration Parameters**
-   - **Grid Spacing**: Distance between grid orders
-   - **Leverage**: Multiplier for position size
-   - **Take Profit**: Target price for position exits
-   - **Markup**: Percentage above entry price for take profit
-   - **Entry Qty**: Initial position size relative to balance
+   - **Grid Spacing**: Distance between grid entries (entry_grid_spacing_pct)
+   - **Markup**: Percentage above entry price for take profit (close_grid_min_markup)
+   - **Markup Range**: Distribution range for take profit orders (close_grid_markup_range)
+   - **Grid Ratio**: Balance between grid and trailing orders (*_trailing_grid_ratio)
+   - **Double Down Factor**: Multiplier for subsequent entry sizes (entry_grid_double_down_factor)
+   - **EMA Distance**: Offset from EMA band for initial entries (entry_initial_ema_dist)
 
 3. **System Components**
    - **Backtester**: Simulates strategy on historical data
-   - **Optimizer**: Finds optimal parameter configurations
+   - **Optimizer**: Finds optimal parameter configurations using genetic algorithm
    - **Exchange Adapter**: Interface to specific cryptocurrency exchange
    - **Position Manager**: Tracks and updates open positions
+   - **Order Generator**: Creates ideal orders based on current state
+   - **EMA Calculator**: Computes and tracks exponential moving averages
+
+## Configuration Parameter Guidelines
+
+1. **Entry Parameter Relationships**
+   - Smaller entry_initial_qty_pct creates more room for re-entries
+   - Larger entry_grid_spacing_pct spaces entries further apart
+   - entry_grid_double_down_factor > 1.0 creates increasingly larger entries
+   - More negative entry_initial_ema_dist places initial entries further from current price
+
+2. **Take Profit Parameter Relationships**
+   - close_grid_min_markup defines minimum profit target
+   - close_grid_markup_range spreads take-profit orders over a range
+   - close_grid_qty_pct determines how much of position is closed at each level
+   - Smaller close_grid_qty_pct creates more granular take-profit steps
+
+3. **Trailing Order Parameter Relationships**
+   - entry_trailing_threshold_pct sets required move before tracking begins
+   - entry_trailing_retracement_pct determines how much price must retrace to trigger entry
+   - Higher *_trailing_grid_ratio values prioritize trailing orders over grid orders
+   - Negative *_trailing_grid_ratio values prioritize grid orders first, then trailing
+
+4. **Risk Management Parameter Relationships**
+   - total_wallet_exposure_limit sets maximum capital allocation
+   - n_positions determines diversification level
+   - unstuck_threshold controls when positions are considered stuck
+   - unstuck_loss_allowance_pct limits realized losses
 
 ## Documentation Standards
 
@@ -128,5 +160,27 @@
    - Consider both execution speed and memory usage
    - Balance between Python flexibility and Rust performance
    - Document performance-critical sections of code
+
+## Known Challenges and Solutions
+
+1. **Exchange API Reliability**
+   - **Challenge**: Exchange APIs may have outages or rate limits
+   - **Solution**: Implement robust error handling, backoff mechanisms, and alternative data sources
+
+2. **Parameter Optimization Complexity**
+   - **Challenge**: Large parameter space makes optimization computationally intensive
+   - **Solution**: Use multi-objective genetic algorithms and parallel processing
+
+3. **Position Stuckness in Trending Markets**
+   - **Challenge**: Grid strategy can result in underwater positions in strong trends
+   - **Solution**: Implement unstucking mechanism with controlled loss realization
+
+4. **Memory Usage in Backtesting**
+   - **Challenge**: Large historical datasets consume significant memory
+   - **Solution**: Use Rust for core calculations and implement data streaming techniques
+
+5. **Configuration Complexity**
+   - **Challenge**: Many parameters make configuration difficult for users
+   - **Solution**: Provide templates, optimization tools, and clear documentation
 
 This file serves as a living document that will be updated as we discover more project-specific patterns and best practices. It helps maintain consistency in our approach to the Passivbot codebase.
