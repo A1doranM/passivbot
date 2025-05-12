@@ -347,6 +347,7 @@ results*
 
 # Config files
 api-keys.json
+api-keys PROD.json
 !live_configs/binance_default.json
 !live_configs/bybit_default.json
 live_configs/*
